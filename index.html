@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rematezs · Prototipos — Examen Transversal Crea e Innova</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F6F4EE; --paper:#FFFFFF; --ink:#171512; --ink-soft:#5B564C; --line:#DFD9CB;
+    --gold:#B4862C; --teal:#2E6659;
+    --serif:'Fraunces',Georgia,serif; --sans:'Inter',-apple-system,sans-serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#15130F; --paper:#1E1B15; --ink:#F3EFE4; --ink-soft:#B7AF9C; --line:#3A3529;
+      --gold:#D9AD54; --teal:#5CA793;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#15130F; --paper:#1E1B15; --ink:#F3EFE4; --ink-soft:#B7AF9C; --line:#3A3529;
+    --gold:#D9AD54; --teal:#5CA793;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--bg); color:var(--ink); font-family:var(--sans); line-height:1.5;}
+  .wrap{max-width:800px; margin:0 auto; padding:60px 20px 80px;}
+  .eyebrow{font-size:0.8rem; color:var(--ink-soft);}
+  h1{font-family:var(--serif); font-weight:700; font-size:2.1rem; margin:10px 0 6px; line-height:1.15;}
+  h1 span{color:var(--gold);}
+  .lead{color:var(--ink-soft); font-size:1rem; max-width:56ch; margin:0 0 44px;}
+
+  .cards{display:flex; flex-direction:column; gap:16px;}
+  .card{
+    display:block; background:var(--paper); border:1px solid var(--line); border-radius:6px;
+    padding:22px 24px; text-decoration:none; color:var(--ink);
+  }
+  .card:hover{border-color:var(--gold);}
+  .card .tag{font-size:0.74rem; color:var(--gold); font-weight:600; letter-spacing:0.02em;}
+  .card h2{font-family:var(--serif); font-weight:600; font-size:1.25rem; margin:5px 0 6px;}
+  .card p{margin:0; font-size:0.88rem; color:var(--ink-soft);}
+  .card .go{margin-top:12px; font-size:0.82rem; color:var(--teal); font-weight:600;}
+
+  footer{margin-top:56px; padding-top:20px; border-top:1px solid var(--line); font-size:0.78rem; color:var(--ink-soft);}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="eyebrow">Examen Transversal · Crea e Innova (AT201)</div>
+    <h1>Prototipos — <span>Rematezs.cl</span></h1>
+    <p class="lead">Tres prototipos complementarios para eliminar la dependencia de WhatsApp manual en el seguimiento de adjudicaciones.</p>
+
+    <div class="cards">
+      <a class="card" href="./portal/">
+        <div class="tag">Prototipo 1 · Mockup cliente</div>
+        <h2>Portal de seguimiento</h2>
+        <p>El cliente consulta el estado de su adjudicación por folio o RUT y sube su comprobante de pago directamente.</p>
+        <div class="go">Ver prototipo →</div>
+      </a>
+
+      <a class="card" href="./bot/">
+        <div class="tag">Prototipo 2 · Simulación conversacional</div>
+        <h2>Bot de WhatsApp automatizado</h2>
+        <p>Mismo canal que ya usan los clientes, pero las respuestas de estado dejan de depender de un ejecutivo.</p>
+        <div class="go">Ver prototipo →</div>
+      </a>
+
+      <a class="card" href="./panel/">
+        <div class="tag">Prototipo 3 · Back-stage del servicio</div>
+        <h2>Panel interno de adjudicaciones</h2>
+        <p>El equipo comercial mueve cada adjudicación de etapa; eso dispara la notificación automática al cliente.</p>
+        <div class="go">Ver prototipo →</div>
+      </a>
+    </div>
+
+    <footer>Prototipo académico — no representa una implementación oficial de Rematezs.cl.</footer>
+  </div>
+</body>
+</html>

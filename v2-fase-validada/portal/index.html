@@ -95,10 +95,43 @@
 
   .status-banner{
     margin-top:16px; padding:14px 18px; border-radius:var(--radius); font-size:0.92rem; font-weight:500;
-    display:flex; align-items:center; gap:10px;
+    display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;
   }
   .status-banner.teal{background:var(--teal-soft); color:var(--teal);}
   .status-banner.gold{background:var(--gold-soft); color:var(--gold);}
+  .status-banner .eta{
+    font-size:0.76rem; font-weight:700; text-transform:uppercase; letter-spacing:0.03em;
+    background:rgba(255,255,255,0.55); padding:4px 10px; border-radius:100px; white-space:nowrap;
+  }
+  :root[data-theme="dark"] .status-banner .eta{background:rgba(0,0,0,0.22);}
+  @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .status-banner .eta{background:rgba(0,0,0,0.22);}}
+
+  .progress-track{margin-top:16px; height:8px; background:var(--line); border-radius:100px; overflow:hidden;}
+  .progress-fill{height:100%; background:var(--teal); border-radius:100px; transition:width 0.35s ease;}
+  .progress-label{display:flex; justify-content:space-between; font-size:0.76rem; color:var(--ink-soft); margin-top:6px;}
+  .progress-label b{color:var(--ink);}
+
+  .notify-row{margin-top:14px; display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
+  .notify-btn{
+    background:var(--paper); border:1px solid var(--line); color:var(--ink); font-size:0.8rem; font-weight:600;
+    padding:8px 14px; border-radius:100px; cursor:pointer; font-family:var(--sans); display:inline-flex; align-items:center; gap:6px;
+  }
+  .notify-btn.active{background:var(--teal-soft); border-color:var(--teal); color:var(--teal);}
+  .notify-note{font-size:0.78rem; color:var(--ink-soft); display:none;}
+  .notify-note.show{display:inline;}
+
+  .glossary{margin-top:20px;}
+  .glossary summary{cursor:pointer; font-size:0.84rem; color:var(--teal); font-weight:600; list-style:none;}
+  .glossary summary::-webkit-details-marker{display:none;}
+  .glossary-body{margin-top:10px; font-size:0.82rem; color:var(--ink-soft); background:var(--paper); border:1px solid var(--line); border-radius:var(--radius); padding:14px 16px;}
+  .glossary-body div{margin-bottom:9px; line-height:1.45;}
+  .glossary-body div:last-child{margin-bottom:0;}
+  .glossary-body b{color:var(--ink);}
+
+  .step .eta{
+    display:inline-block; margin-top:4px; font-size:0.74rem; font-weight:600; color:var(--gold);
+  }
+  .step.done .eta{color:var(--teal);}
 
   .stepper{margin-top:36px;}
   .stepper h3{font-family:var(--serif); font-weight:600; font-size:1rem; margin:0 0 20px; color:var(--ink-soft); font-weight:500;}
@@ -123,17 +156,16 @@
 
   .upload{
     margin-top:36px; border:1.5px dashed var(--line); border-radius:var(--radius);
-    padding:26px; text-align:center; background:var(--paper);
+    padding:0; background:var(--paper); overflow:hidden;
   }
   .upload.hidden{display:none;}
+  .upload.dragover{border-color:var(--gold); background:var(--gold-soft);}
+  .upload-drop{display:block; cursor:pointer; text-align:center; padding:26px;}
+  .upload-icon{font-size:1.6rem; margin-bottom:8px;}
   .upload h4{font-family:var(--serif); font-weight:600; margin:0 0 6px;}
-  .upload p{font-size:0.85rem; color:var(--ink-soft); margin:0 0 16px;}
-  .upload label{
-    display:inline-block; background:var(--ink); color:var(--bg); padding:10px 20px;
-    border-radius:var(--radius); font-size:0.85rem; font-weight:600; cursor:pointer;
-  }
+  .upload p{font-size:0.85rem; color:var(--ink-soft); margin:0;}
   .upload input[type=file]{display:none;}
-  .upload .filename{margin-top:12px; font-size:0.82rem; color:var(--teal); display:none;}
+  .upload .filename{margin:0 20px 18px; font-size:0.82rem; color:var(--teal); display:none; text-align:center;}
 
   .help{
     margin-top:40px; padding-top:20px; border-top:1px solid var(--line);
@@ -190,15 +222,38 @@
       Tu comprobante de pago fue recibido y está pendiente de validación.
     </div>
 
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="progress-label"><span>Progreso del proceso</span><b id="progressPct">0%</b></div>
+
+    <div class="notify-row">
+      <button class="notify-btn" id="notifyBtn">🔔 Avisarme cuando cambie el estado</button>
+      <span class="notify-note" id="notifyNote">Listo — te avisaremos por WhatsApp apenas cambie.</span>
+    </div>
+
     <div class="stepper">
       <h3>Estado de tu adjudicación</h3>
       <ul class="steps" id="stepsList"></ul>
     </div>
 
+    <details class="glossary">
+      <summary>❓ ¿Qué significa cada etapa? — guía rápida</summary>
+      <div class="glossary-body">
+        <div><b>Comprobante recibido:</b> ya tenemos tu comprobante, aún no lo revisa tesorería.</div>
+        <div><b>Pago validado:</b> confirmamos que el pago llegó correctamente.</div>
+        <div><b>Generando acta:</b> estamos redactando el documento legal de tu adjudicación.</div>
+        <div><b>En facturación:</b> se está emitiendo tu documento tributario.</div>
+        <div><b>Listo para retiro:</b> ya puedes coordinar el retiro del bien.</div>
+        <div><b>Retirado:</b> el proceso terminó.</div>
+      </div>
+    </details>
+
     <div class="upload" id="uploadBox">
-      <h4>Sube tu comprobante de pago</h4>
-      <p>Formato PDF o imagen. Reemplaza el envío por WhatsApp — tu comprobante queda asociado directamente a este folio.</p>
-      <label>Seleccionar archivo<input type="file" id="fileInput"></label>
+      <label class="upload-drop" for="fileInput">
+        <div class="upload-icon">📎</div>
+        <h4>Sube tu comprobante en un paso</h4>
+        <p>Arrastra el archivo aquí o haz clic para seleccionarlo (PDF o imagen)</p>
+      </label>
+      <input type="file" id="fileInput">
       <div class="filename" id="fileName"></div>
     </div>
 
@@ -213,12 +268,12 @@
 
 <script>
 const STAGES = [
-  {key:"pago_recibido", label:"Comprobante recibido", desc:"Enviaste tu comprobante de pago."},
-  {key:"pago_validado", label:"Pago validado", desc:"El área de tesorería confirmó tu pago."},
-  {key:"generando_acta", label:"Generando acta de adjudicación", desc:"Se está redactando el acta a tu nombre."},
-  {key:"facturacion", label:"En facturación", desc:"Tu documento tributario está en emisión."},
-  {key:"listo_retiro", label:"Listo para retiro", desc:"Puedes coordinar el retiro del bien."},
-  {key:"retirado", label:"Retirado", desc:"Proceso finalizado."}
+  {key:"pago_recibido", label:"Comprobante recibido", desc:"Enviaste tu comprobante de pago.", eta:"Validación en 1 a 2 días hábiles"},
+  {key:"pago_validado", label:"Pago validado", desc:"El área de tesorería confirmó tu pago.", eta:"Acta lista en 1 día hábil"},
+  {key:"generando_acta", label:"Generando acta de adjudicación", desc:"Se está redactando el acta a tu nombre.", eta:"Pasa a facturación en 1 día hábil"},
+  {key:"facturacion", label:"En facturación", desc:"Tu documento tributario está en emisión.", eta:"Listo en menos de 24 horas"},
+  {key:"listo_retiro", label:"Listo para retiro", desc:"Puedes coordinar el retiro del bien.", eta:"Retira cuando gustes"},
+  {key:"retirado", label:"Retirado", desc:"Proceso finalizado.", eta:null}
 ];
 
 const DATA = {
@@ -245,8 +300,13 @@ function render(folio){
   document.getElementById("rAmount").textContent = d.amount;
 
   const banner = document.getElementById("statusBanner");
-  banner.textContent = STAGES[d.stage].desc;
+  const currentEta = STAGES[d.stage].eta;
+  banner.innerHTML = `<span>${STAGES[d.stage].desc}</span>` + (currentEta ? `<span class="eta">⏱ ${currentEta}</span>` : "");
   banner.className = "status-banner " + (d.stage >= 4 ? "teal" : "gold");
+
+  const pct = Math.round((d.stage / (STAGES.length - 1)) * 100);
+  document.getElementById("progressFill").style.width = pct + "%";
+  document.getElementById("progressPct").textContent = pct + "%";
 
   const list = document.getElementById("stepsList");
   list.innerHTML = "";
@@ -254,12 +314,18 @@ function render(folio){
     const li = document.createElement("li");
     li.className = "step " + (i < d.stage ? "done" : i === d.stage ? "current" : "pending");
     const dotContent = i < d.stage ? "✓" : (i + 1);
-    li.innerHTML = `<div class="dot">${dotContent}</div><div class="label">${s.label}</div><div class="desc">${s.desc}</div>`;
+    const etaLine = (i === d.stage && s.eta) ? `<div class="eta">⏱ ${s.eta}</div>` : "";
+    li.innerHTML = `<div class="dot">${dotContent}</div><div class="label">${s.label}</div><div class="desc">${s.desc}</div>${etaLine}`;
     list.appendChild(li);
   });
 
   const uploadBox = document.getElementById("uploadBox");
   uploadBox.className = "upload" + (d.needsUpload ? "" : " hidden");
+
+  const notifyBtn = document.getElementById("notifyBtn");
+  notifyBtn.className = "notify-btn";
+  notifyBtn.textContent = "🔔 Avisarme cuando cambie el estado";
+  document.getElementById("notifyNote").classList.remove("show");
 }
 
 document.getElementById("buscarBtn").addEventListener("click", () => {
@@ -280,6 +346,28 @@ document.getElementById("fileInput").addEventListener("change", (e) => {
   if(e.target.files.length){
     fn.textContent = "✓ " + e.target.files[0].name + " — en validación";
     fn.style.display = "block";
+  }
+});
+
+document.getElementById("notifyBtn").addEventListener("click", function(){
+  const note = document.getElementById("notifyNote");
+  const isActive = this.classList.toggle("active");
+  note.classList.toggle("show", isActive);
+  this.textContent = isActive ? "🔔 Notificaciones activadas" : "🔔 Avisarme cuando cambie el estado";
+});
+
+const dropZone = document.getElementById("uploadBox");
+["dragover","dragenter"].forEach(evt => dropZone.addEventListener(evt, (e) => {
+  e.preventDefault(); dropZone.classList.add("dragover");
+}));
+["dragleave","dragend","drop"].forEach(evt => dropZone.addEventListener(evt, (e) => {
+  e.preventDefault(); dropZone.classList.remove("dragover");
+}));
+dropZone.addEventListener("drop", (e) => {
+  const files = e.dataTransfer.files;
+  if(files.length){
+    document.getElementById("fileInput").files = files;
+    document.getElementById("fileInput").dispatchEvent(new Event("change"));
   }
 });
 </script>

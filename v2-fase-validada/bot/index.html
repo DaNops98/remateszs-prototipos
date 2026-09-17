@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rematezs · Bot de WhatsApp</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F6F4EE; --paper:#FFFFFF; --ink:#171512; --ink-soft:#5B564C; --line:#DFD9CB;
+    --gold:#B4862C; --wa-bg:#E9E3D3; --wa-bubble-bot:#FFFFFF; --wa-bubble-user:#D6E9C6;
+    --wa-header:#1F2B25; --serif:'Fraunces',Georgia,serif; --sans:'Inter',-apple-system,sans-serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#15130F; --paper:#1E1B15; --ink:#F3EFE4; --ink-soft:#B7AF9C; --line:#3A3529;
+      --gold:#D9AD54; --wa-bg:#0B141A; --wa-bubble-bot:#1F2C34; --wa-bubble-user:#005C4B;
+      --wa-header:#1F2B25;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#15130F; --paper:#1E1B15; --ink:#F3EFE4; --ink-soft:#B7AF9C; --line:#3A3529;
+    --gold:#D9AD54; --wa-bg:#0B141A; --wa-bubble-bot:#1F2C34; --wa-bubble-user:#005C4B; --wa-header:#1F2B25;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--bg); color:var(--ink); font-family:var(--sans); padding:32px 16px 60px;}
+  .intro{max-width:520px; margin:0 auto 24px;}
+  .intro .brand{font-family:var(--serif); font-weight:700; font-size:1.3rem;}
+  .intro .brand span{color:var(--gold);}
+  .intro p{font-size:0.88rem; color:var(--ink-soft); margin-top:6px;}
+
+  .phone{
+    max-width:400px; margin:0 auto; background:var(--wa-bg); border-radius:22px;
+    border:1px solid var(--line); overflow:hidden; box-shadow:0 12px 28px rgba(0,0,0,0.12);
+  }
+  .phone-header{
+    background:var(--wa-header); color:#fff; padding:16px 18px; display:flex; align-items:center; gap:10px;
+  }
+  .avatar{
+    width:34px; height:34px; border-radius:50%; background:var(--gold); display:flex; align-items:center;
+    justify-content:center; font-weight:700; font-size:0.85rem; color:#171512; flex-shrink:0;
+  }
+  .phone-header .name{font-weight:600; font-size:0.92rem;}
+  .phone-header .status{font-size:0.72rem; opacity:0.75;}
+
+  .chat{padding:16px 12px; min-height:420px; display:flex; flex-direction:column; gap:10px;}
+  .bubble{
+    max-width:82%; padding:9px 12px; border-radius:10px; font-size:0.86rem; line-height:1.4;
+    box-shadow:0 1px 1px rgba(0,0,0,0.06); animation:pop 0.18s ease;
+  }
+  @keyframes pop{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);}}
+  .bot{background:var(--wa-bubble-bot); align-self:flex-start; color:var(--ink); border-top-left-radius:2px;}
+  .user{background:var(--wa-bubble-user); align-self:flex-end; color:var(--ink); border-top-right-radius:2px;}
+  .bubble .tag{font-size:0.68rem; color:var(--gold); font-weight:600; display:block; margin-bottom:2px;}
+
+  .options{padding:0 12px 16px; display:flex; flex-direction:column; gap:8px;}
+  .options button{
+    background:var(--paper); border:1px solid var(--gold); color:var(--gold); font-weight:600;
+    font-size:0.84rem; padding:10px 14px; border-radius:8px; cursor:pointer; font-family:var(--sans);
+    text-align:left;
+  }
+  .options button:hover{background:var(--gold); color:#fff;}
+  .options.hidden{display:none;}
+
+  .textrow{padding:0 12px 14px; display:flex; gap:8px;}
+  .textrow input{
+    flex:1; border:1px solid var(--wa-header); border-radius:20px; padding:9px 14px; font-size:0.84rem;
+    font-family:var(--sans); background:var(--wa-bubble-bot); color:var(--ink);
+  }
+  .textrow input:focus{outline:2px solid var(--gold);}
+  .textrow button{
+    background:var(--wa-header); color:#fff; border:none; border-radius:20px; padding:9px 16px;
+    font-size:0.82rem; font-weight:600; cursor:pointer; font-family:var(--sans);
+  }
+
+  .restart{
+    display:block; max-width:400px; margin:18px auto 0; text-align:center; font-size:0.8rem;
+    color:var(--ink-soft); background:none; border:none; cursor:pointer; text-decoration:underline;
+  }
+  footer{text-align:center; font-size:0.75rem; color:var(--ink-soft); margin-top:40px;}
+</style>
+</head>
+<body>
+  <div class="intro">
+    <div class="brand">REMATE<span>ZS</span> · Bot de estado</div>
+    <p>Mismo canal que ya usan los clientes (WhatsApp), pero las respuestas de estado dejan de depender de un ejecutivo escribiendo uno a uno. Haz clic en una opción o escribe tu propia pregunta abajo.</p>
+  </div>
+
+  <div class="phone">
+    <div class="phone-header">
+      <div class="avatar">RZ</div>
+      <div>
+        <div class="name">Rematezs — Asistente</div>
+        <div class="status">en línea · respuesta automática</div>
+      </div>
+    </div>
+    <div class="chat" id="chat"></div>
+    <div class="options" id="options"></div>
+    <div class="textrow">
+      <input id="freeText" placeholder="O escribe tu pregunta, ej: ¿cómo retiro mi bien?" autocomplete="off">
+      <button id="sendBtn">Enviar</button>
+    </div>
+  </div>
+
+  <button class="restart" id="restartBtn">↺ Reiniciar conversación</button>
+  <footer>Prototipo — Rematezs · Examen Transversal Crea e Innova</footer>
+
+<script>
+const chat = document.getElementById("chat");
+const optionsBox = document.getElementById("options");
+
+function addBubble(type, text, tag){
+  const b = document.createElement("div");
+  b.className = "bubble " + type;
+  b.innerHTML = (tag ? `<span class="tag">${tag}</span>` : "") + text;
+  chat.appendChild(b);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function setOptions(opts){
+  optionsBox.innerHTML = "";
+  if(!opts || !opts.length){ optionsBox.classList.add("hidden"); return; }
+  optionsBox.classList.remove("hidden");
+  opts.forEach(o => {
+    const btn = document.createElement("button");
+    btn.textContent = o.label;
+    btn.addEventListener("click", () => {
+      addBubble("user", o.label);
+      setOptions([]);
+      setTimeout(o.next, 380);
+    });
+    optionsBox.appendChild(btn);
+  });
+}
+
+function start(){
+  chat.innerHTML = "";
+  addBubble("bot", "¡Hola! 👋 Soy el asistente de Rematezs. ¿En qué puedo ayudarte?", "Bot");
+  setOptions([
+    {label:"Ver el estado de mi adjudicación", next: askFolio},
+    {label:"Subir comprobante de pago", next: uploadFlow},
+    {label:"Preguntas frecuentes", next: faqFlow},
+    {label:"Hablar con un ejecutivo", next: humanFlow},
+  ]);
+}
+
+function faqFlow(){
+  addBubble("bot", "Estas son las consultas más frecuentes. Elige una o escribe tu propia pregunta abajo:", "Bot");
+  setOptions([
+    {label:"¿Cómo retiro mi bien?", next: () => { addBubble("bot", "Cuando tu estado esté en <b>Listo para retiro</b>, coordina día y hora respondiendo a este chat o llamando a la oficina. Debes traer tu cédula y el folio de adjudicación.", "Bot"); setOptions([{label:"Menú principal", next: start}]); }},
+    {label:"¿Qué pasa si mi pago se demora?", next: () => { addBubble("bot", "Si pasan más de 2 días hábiles sin validación, te lo notificaremos automáticamente. También puedes revisarlo en cualquier momento en el portal.", "Bot"); setOptions([{label:"Menú principal", next: start}]); }},
+    {label:"¿Cuál es el horario de atención?", next: () => { addBubble("bot", "Atendemos de lunes a viernes, de 9:00 a 18:00 hrs. Este bot responde consultas de estado las 24 horas.", "Bot"); setOptions([{label:"Menú principal", next: start}]); }},
+    {label:"Menú principal", next: start},
+  ]);
+}
+
+function askFolio(){
+  addBubble("bot", "Perfecto. Indícame tu número de folio o RUT.", "Bot");
+  setOptions([
+    {label:"R-1042 (folio de ejemplo)", next: () => statusResult("R-1042")},
+    {label:"R-1077 (folio de ejemplo)", next: () => statusResult("R-1077")},
+  ]);
+}
+
+function statusResult(folio){
+  const info = {
+    "R-1042": {msg:"Tu comprobante fue recibido y está <b>pendiente de validación</b> por tesorería.", eta:"Validación en 1 a 2 días hábiles"},
+    "R-1077": {msg:"Tu pago fue validado ✅ y actualmente estamos <b>generando el acta de adjudicación</b> del Lote 46.", eta:"Pasa a facturación en 1 día hábil"},
+  };
+  const r = info[folio];
+  addBubble("bot", `Folio <b>${folio}</b>:<br>${r.msg}<br>⏱ <b>${r.eta}</b>`, "Bot");
+  setOptions([
+    {label:"Ver el detalle completo en el portal", next: portalLink},
+    {label:"Consultar otro folio", next: askFolio},
+    {label:"Menú principal", next: start},
+  ]);
+}
+
+function portalLink(){
+  addBubble("bot", "Puedes ver el detalle y el historial completo aquí: <b>rematezs.cl/seguimiento</b> — no necesitas escribirnos para consultar el avance.", "Bot");
+  setOptions([{label:"Menú principal", next: start}]);
+}
+
+function uploadFlow(){
+  addBubble("bot", "Envíame la foto o el PDF de tu comprobante y lo dejo asociado a tu folio automáticamente.", "Bot");
+  setOptions([
+    {label:"📎 Adjuntar comprobante (simulado)", next: () => {
+      addBubble("bot", "Recibido ✅. Tu comprobante quedó registrado y pasa a validación. Te avisaremos por este mismo chat cuando se confirme.", "Bot");
+      setOptions([{label:"Menú principal", next: start}]);
+    }},
+  ]);
+}
+
+function humanFlow(){
+  addBubble("bot", "Entendido. Te conecto con un ejecutivo disponible — esto se reserva para casos particulares, ya que las consultas de estado ahora se resuelven automáticamente por aquí.", "Bot");
+  setOptions([{label:"Menú principal", next: start}]);
+}
+
+document.getElementById("restartBtn").addEventListener("click", start);
+
+function handleFreeText(){
+  const input = document.getElementById("freeText");
+  const text = input.value.trim();
+  if(!text) return;
+  addBubble("user", text);
+  input.value = "";
+  setOptions([]);
+  const t = text.toLowerCase();
+  setTimeout(() => {
+    if(/(estado|adjudicaci|folio|c[oó]mo va)/.test(t)){
+      askFolio();
+    } else if(/(comprobante|pago|subir|transferencia)/.test(t)){
+      uploadFlow();
+    } else if(/(retir|cu[aá]ndo puedo pasar)/.test(t)){
+      addBubble("bot", "Cuando tu estado esté en <b>Listo para retiro</b>, coordina día y hora respondiendo a este chat. Trae tu cédula y el folio de adjudicación.", "Bot");
+      setOptions([{label:"Menú principal", next: start}]);
+    } else if(/(factur)/.test(t)){
+      addBubble("bot", "Tu factura se emite automáticamente una vez validado el pago. Puedes ver si ya está lista en el portal o preguntándome el estado de tu folio.", "Bot");
+      setOptions([{label:"Menú principal", next: start}]);
+    } else if(/(horario|atenci[oó]n)/.test(t)){
+      addBubble("bot", "Atendemos de lunes a viernes, de 9:00 a 18:00 hrs.", "Bot");
+      setOptions([{label:"Menú principal", next: start}]);
+    } else {
+      addBubble("bot", "🤔 No estoy seguro de haber entendido tu pregunta. Elige una opción para ayudarte mejor, o reformúlala:", "Bot");
+      setOptions([
+        {label:"Ver el estado de mi adjudicación", next: askFolio},
+        {label:"Preguntas frecuentes", next: faqFlow},
+        {label:"Hablar con un ejecutivo", next: humanFlow},
+      ]);
+    }
+  }, 380);
+}
+
+document.getElementById("sendBtn").addEventListener("click", handleFreeText);
+document.getElementById("freeText").addEventListener("keydown", (e) => {
+  if(e.key === "Enter") handleFreeText();
+});
+
+start();
+
+</script>
+</body>
+</html>
